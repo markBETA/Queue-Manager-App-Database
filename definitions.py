@@ -18,3 +18,10 @@ from flask_sqlalchemy import SQLAlchemy
 #################################
 
 db_conn = SQLAlchemy()
+
+
+#####################
+# DATABASE BIND KEY #
+#####################
+
+bind_key = "app"
