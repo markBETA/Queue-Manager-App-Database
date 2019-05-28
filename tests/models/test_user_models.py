@@ -10,10 +10,10 @@ __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
 
-from queuemanager.app_database import (
+from ... import (
     User
 )
-from queuemanager.app_database import user_initial_values
+from ... import user_initial_values
 from datetime import datetime
 
 

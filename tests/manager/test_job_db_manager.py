@@ -12,10 +12,10 @@ __status__ = "Development"
 
 from datetime import datetime, timedelta
 
-from queuemanager.app_database.initial_values import (
+from ...initial_values import (
     job_state_initial_values
 )
-from queuemanager.app_database.models import (
+from ...models import (
     PrinterMaterial, PrinterExtruderType, PrinterState, Job
 )
 from ..models import (
