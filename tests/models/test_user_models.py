@@ -52,5 +52,4 @@ def test_user_model(session):
         assert expected_users[i].username == users[i].username
         assert expected_users[i].fullname == users[i].fullname
         assert expected_users[i].email == users[i].email
-        assert expected_users[i].isAdmin == users[i].isAdmin
         assert isinstance(users[i].registeredOn, datetime)

@@ -89,7 +89,6 @@ def user_initial_values():
     return [
         User(
             username="bcn3d", fullname="BCN3D Admin User", email="cloudservices@bcn3dtechnologies.com",
-            isAdmin=True
         ),
     ]
 
