@@ -13,6 +13,7 @@ __status__ = "Development"
 
 def _add_user(db_manager):
     user = db_manager.insert_user("test-user", "Test User", "test@test.com")
+    assert user.isAdmin is False
     return user
 
 

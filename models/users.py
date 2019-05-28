@@ -28,6 +28,7 @@ class User(db.Model):
     username = db.Column(db.String(256), unique=True, nullable=False)
     fullname = db.Column(db.String(256))
     email = db.Column(db.String(256), unique=True, nullable=False)
+    isAdmin = db.Column(db.Boolean, nullable=False, default=False)
     registeredOn = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
     jobs = db.relationship('Job', back_populates='user', cascade="all, delete-orphan")

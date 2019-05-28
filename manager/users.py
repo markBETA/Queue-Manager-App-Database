@@ -23,7 +23,7 @@ class DBManagerUsers(DBManagerBase):
     """
     This class implements the database manager class for the user operations
     """
-    def insert_user(self, username: str, fullname: str, email: str):
+    def insert_user(self, username: str, fullname: str, email: str, is_admin: bool = False):
         # Check parameter values
         if username == "":
             raise InvalidParameter("The 'username' parameter can't be an empty string")
@@ -36,7 +36,8 @@ class DBManagerUsers(DBManagerBase):
         user = User(
             username=username,
             fullname=fullname,
-            email=email
+            email=email,
+            isAdmin=is_admin
         )
 
         # Add the new row to the database
