@@ -18,7 +18,7 @@ def app(request):
     """Session-wide test `Flask` application."""
     settings_override = {
         'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + TEST_DB_PATH,
+        'SQLALCHEMY_DATABASE_URI': 'postgresql+psycopg2://postgres:dev@postgres.dev.server/app_test',
         'SQLALCHEMY_TRACK_MODIFICATIONS': True,
         'TEST_INPUTS_PATH': 'input',
         'SECRET_KEY': os.getenv('SECRET_KEY', 'my_secret_key')
@@ -39,7 +39,7 @@ def app(request):
     return app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def db(app, request):
     """Session-wide test app_database."""
     if os.path.exists(TEST_DB_PATH):

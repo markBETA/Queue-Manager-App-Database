@@ -25,7 +25,7 @@ def test_file_db_manager(db_manager):
     user = User.query.first()
     expected_file = _add_file(db_manager, user)
 
-    file = db_manager.get_files(fileData={"a": 1})
+    file = db_manager.get_files(name="test-file")
     assert expected_file == file[0]
 
     file = db_manager.get_files(id=expected_file.id)
@@ -41,7 +41,7 @@ def test_file_db_manager(db_manager):
     assert file is None
 
     another_file = _add_file(db_manager, user)
-    deleted_files_count = db_manager.delete_files(fileData={"a": 1})
+    deleted_files_count = db_manager.delete_files(name="test-file")
     assert deleted_files_count == 1
 
     file = db_manager.get_files(id=another_file.id)
