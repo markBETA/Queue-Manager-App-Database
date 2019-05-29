@@ -2,7 +2,10 @@ import os
 
 import pytest
 
-from ... import create_app
+try:
+    from ... import create_app
+except ImportError:
+    from .... import create_app
 from .. import db as _db
 from .. import db_mgr
 

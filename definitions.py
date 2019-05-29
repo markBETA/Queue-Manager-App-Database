@@ -17,7 +17,10 @@ from flask_sqlalchemy import SQLAlchemy
 # SQLALCHEMY CONNECTION MANAGER #
 #################################
 
-db_conn = SQLAlchemy()
+try:
+    from ..definitions import db_conn
+except ImportError:
+    db_conn = SQLAlchemy()
 
 
 #####################
