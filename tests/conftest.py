@@ -6,6 +6,7 @@ try:
     from ... import create_app
 except ImportError:
     from .... import create_app
+from ..definitions import bind_key
 from .. import db as _db
 from .. import db_mgr
 
@@ -21,7 +22,7 @@ def app(request):
     """Session-wide test `Flask` application."""
     settings_override = {
         'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'postgresql+psycopg2://postgres:dev@postgres.dev.server/app_test',
+        'SQLALCHEMY_BINDS': {bind_key: 'postgresql+psycopg2://postgres:dev@postgres.dev.server/app_test'},
         'SQLALCHEMY_TRACK_MODIFICATIONS': True,
         'TEST_INPUTS_PATH': 'input',
         'SECRET_KEY': os.getenv('SECRET_KEY', 'my_secret_key')
