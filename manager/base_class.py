@@ -12,7 +12,7 @@ __status__ = "Development"
 
 from flask import current_app
 from sqlalchemy import exc
-from sqlalchemy.orm import Query, scoped_session
+from sqlalchemy.orm import Query, Session, scoped_session
 from parse import parse
 
 from .exceptions import (
@@ -80,6 +80,11 @@ class DBManagerBase(object):
         current_app.logger.info("Object '%s' added to the database", str(row_obj))
 
     def del_row(self, row_obj):
+        object_session = Session.object_session(row_obj)
+        if object_session != self.db_session:
+            object_session.expunge(row_obj)
+            self.db_session.add(row_obj)
+
         self.db_session.delete(row_obj)
         current_app.logger.info("Object '%s' deleted from the database", str(row_obj))
 
