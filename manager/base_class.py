@@ -13,6 +13,7 @@ __status__ = "Development"
 from flask import current_app
 from sqlalchemy import exc
 from sqlalchemy.orm import Query, scoped_session
+from parse import parse
 
 from .exceptions import (
     UniqueConstraintError, DBInternalError
@@ -30,7 +31,6 @@ class DBManagerBase(object):
         self._initial_autocommit = autocommit
         self.db_session = db.session if override_session is None else override_session
         self._session_object = None
-        self._unique_constraint_failed_msg = "UNIQUE constraint failed:"
 
     def init_static_values(self):
         pass
@@ -42,10 +42,12 @@ class DBManagerBase(object):
         self.autocommit = self._initial_autocommit
 
     @staticmethod
-    def _detect_unique_constraint_error_column(error_msg: str):
-        try:
-            return error_msg[25 + len("UNIQUE constraint failed:"):error_msg.find("\n")].strip().split('.')[1]
-        except (ValueError, IndexError):
+    def _detect_unique_constraint_error_column(e):
+        parsed_data = parse('duplicate key value violates unique constraint "{constraint}"\n'
+                            'DETAIL:  Key ({field})=({input}) already exists.\n', str(e.orig))
+        if parsed_data:
+            return parsed_data["field"]
+        else:
             return None
 
     def update_session(self, session: scoped_session):
@@ -62,8 +64,9 @@ class DBManagerBase(object):
         except exc.IntegrityError as e:
             self.db_session.rollback()
             current_app.logger.error("Database integrity error detected. Rolling back. Details: %s", str(e))
-            if self._unique_constraint_failed_msg in str(e):
-                raise UniqueConstraintError(str(e), column=self._detect_unique_constraint_error_column(str(e)))
+            unique_duplicated_column = self._detect_unique_constraint_error_column(e)
+            if unique_duplicated_column:
+                raise UniqueConstraintError(str(e), column=unique_duplicated_column)
             else:
                 raise DBInternalError(str(e))
         except exc.SQLAlchemyError as e:
