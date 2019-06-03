@@ -11,9 +11,9 @@ __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
 
 from flask import current_app
+from parse import parse
 from sqlalchemy import exc
 from sqlalchemy.orm import Query, Session, scoped_session
-from parse import parse
 
 from .exceptions import (
     UniqueConstraintError, DBInternalError
@@ -61,6 +61,7 @@ class DBManagerBase(object):
         # Update the database with error catching
         try:
             self.db_session.commit()
+            self.db_session.flush()
         except exc.IntegrityError as e:
             self.db_session.rollback()
             current_app.logger.error("Database integrity error detected. Rolling back. Details: %s", str(e))
@@ -77,6 +78,8 @@ class DBManagerBase(object):
 
     def add_row(self, row_obj):
         self.db_session.add(row_obj)
+        self.commit_changes()
+        self.db_session.refresh(row_obj)
         current_app.logger.info("Object '%s' added to the database", str(row_obj))
 
     def del_row(self, row_obj):
