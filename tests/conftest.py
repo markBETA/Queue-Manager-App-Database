@@ -2,6 +2,8 @@ import os
 
 import pytest
 
+from sqlalchemy.orm import close_all_sessions
+
 try:
     from ... import create_app
 except ImportError:
@@ -50,19 +52,13 @@ def db(app, request):
         os.unlink(TEST_DB_PATH)
 
     def teardown():
-        _db.drop_all()
         if os.path.exists(TEST_DB_PATH):
             os.unlink(TEST_DB_PATH)
 
-    connection = _db.engine.connect()
-    options = dict(bind=connection, binds={})
-    session = _db.create_scoped_session(options=options)
-    _db.session = session
-
+    _db.drop_all()
     _db.create_all()
-
-    connection.close()
-    session.remove()
+    _db.session.expunge_all()
+    _db.session.remove()
 
     request.addfinalizer(teardown)
     return _db
@@ -71,21 +67,14 @@ def db(app, request):
 @pytest.fixture(scope='function')
 def session(db, request):
     """Creates a new app_database session for a test."""
-    connection = db.engine.connect()
-    transaction = connection.begin()
-
-    options = dict(bind=connection, binds={})
-    session = db.create_scoped_session(options=options)
-
-    db.session = session
+    db.session = db.create_scoped_session()
 
     def teardown():
-        transaction.rollback()
-        connection.close()
-        session.remove()
+        db.session.expunge_all()
+        close_all_sessions()
 
     request.addfinalizer(teardown)
-    return session
+    return db.session
 
 
 @pytest.fixture(scope='function')
