@@ -12,7 +12,7 @@ __status__ = "Development"
 
 from .base_class import DBManagerBase
 from ..models import (
-    User, File
+    User
 )
 from .exceptions import (
     InvalidParameter
