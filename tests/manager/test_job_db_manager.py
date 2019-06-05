@@ -12,14 +12,14 @@ __status__ = "Development"
 
 from datetime import datetime, timedelta
 
+from ..models import (
+    add_user, add_file, add_job, add_printer, add_printer_extruders
+)
 from ...initial_values import (
     job_state_initial_values
 )
 from ...models import (
     PrinterMaterial, PrinterExtruderType, PrinterState, Job
-)
-from ..models import (
-    add_user, add_file, add_job, add_printer, add_printer_extruders
 )
 
 

@@ -20,7 +20,7 @@ from .exceptions import (
 )
 from ..models import (
     PrinterModel, PrinterState, PrinterExtruderType, PrinterMaterial, PrinterExtruder,
-    Printer, Job
+    Printer
 )
 
 
