@@ -514,8 +514,8 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
                         assigned_printer=None, progress=0.0, estimatedTimeLeft=None)
 
         # Reset the job used data
-        for job_extruder in job.extruders_data:
-            self.update_job_extruder(job_extruder, idUsedExtruderType=None, idUsedMaterial=None)
+        values_to_update = {JobExtruder.idUsedExtruderType: None, JobExtruder.idUsedMaterial: None}
+        self.execute_update(JobExtruder.query.filter_by(idJob=job.id), values_to_update)
 
         return job
 
@@ -543,3 +543,28 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             self.commit_changes()
 
         return printer
+
+    def reprint_done_job(self, job: Job):
+        # Check that the job is in the printing or finished state
+        if job.idState != self.job_state_ids["Done"]:
+            raise InvalidParameter("The job to enqueue needs to be in the state 'Done'")
+
+        # Check if the job can be printed with the actual printer configuration
+        can_be_printed = self.check_can_be_printed_job(job)
+
+        query = Job.query.filter(Job.priority_i.isnot(None))
+
+        # Get the job with the highest priority_i
+        lowest_priority_job = self.execute_query(query.order_by(Job.priority_i.desc()), use_list=False)
+        job_priority_i = 1 if lowest_priority_job is None else lowest_priority_job.priority_i + 1
+
+        # Update the job priority_i, state, if can be printed and the retries
+        self.update_job(job, priority_i=job_priority_i, idState=self.job_state_ids["Waiting"],
+                        canBePrinted=can_be_printed, retries=0, startedAt=None, finishedAt=None,
+                        assigned_printer=None, progress=0.0, estimatedTimeLeft=None)
+
+        # Reset the job used data
+        values_to_update = {JobExtruder.idUsedExtruderType: None, JobExtruder.idUsedMaterial: None}
+        self.execute_update(JobExtruder.query.filter_by(idJob=job.id), values_to_update)
+
+        return job
