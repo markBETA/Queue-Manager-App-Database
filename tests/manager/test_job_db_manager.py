@@ -329,7 +329,7 @@ def test_job_db_manager(db_manager):
     expected_queue_order = [jobs[3], jobs[1], jobs[4], jobs[2], jobs[0]]
     assert expected_queue_order == Job.query.filter(Job.priority_i.isnot(None)).order_by(Job.priority_i.asc()).all()
 
-    default_printer = db_manager.get_printers(name="default")
+    default_printer = db_manager.get_printers(name="Sigmax 4.0")
     db_manager.assign_job_to_printer(default_printer, enqueued_job)
 
     assert default_printer.current_job.id == enqueued_job.id

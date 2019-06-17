@@ -134,7 +134,6 @@ class Printer(db.Model):
     name = db.Column(db.String(256), unique=True, nullable=False)
     serialNumber = db.Column(db.String(256), unique=True, nullable=False)
     ipAddress = db.Column(db.String(16))
-    apiKey = db.Column(db.String(256), default=uuid.uuid4().hex, unique=True, nullable=False)
     sid = db.Column(db.String(64))
     registeredAt = db.Column(db.DateTime, default=datetime.now, nullable=False)
     totalSuccessPrints = db.Column(db.Integer, nullable=False, default=0)

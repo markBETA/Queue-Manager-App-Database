@@ -73,8 +73,7 @@ def printer_extruder_initial_values():
 def printer_initial_values():
     return [
         Printer(
-            idModel=2, idState=1, name="default", serialNumber="020.180622.3180",
-            apiKey="b82a38ead630438abf1bc56a2c6aa281"
+            idModel=2, idState=1, name="Sigmax 4.0", serialNumber="020.180622.3180"
         )
     ]
 

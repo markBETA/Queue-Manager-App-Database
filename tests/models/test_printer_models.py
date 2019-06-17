@@ -28,7 +28,6 @@ def add_printer(session):
         idModel=model.id,
         idState=state.id,
         serialNumber="000.00000.000",
-        apiKey="8848930e-ad3a-4f05-9151-2c004233470f"
     )
 
     session.add(printer)
@@ -177,4 +176,3 @@ def test_printer_model(session):
         assert expected_printers[i].idState == printers[i].idState
         assert expected_printers[i].name == printers[i].name
         assert expected_printers[i].serialNumber == printers[i].serialNumber
-        assert expected_printers[i].apiKey == printers[i].apiKey

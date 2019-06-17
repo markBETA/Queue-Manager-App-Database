@@ -168,7 +168,6 @@ def test_printer_db_manager(db_manager):
         assert expected_printers[i].name == printers[i].name
         assert expected_printers[i].serialNumber == printers[i].serialNumber
         assert expected_printers[i].ipAddress == printers[i].ipAddress
-        assert expected_printers[i].apiKey == printers[i].apiKey
         assert printers[i].totalSuccessPrints == 0
         assert printers[i].totalFailedPrints == 0
         assert printers[i].totalPrintingTime == timedelta()
@@ -177,21 +176,20 @@ def test_printer_db_manager(db_manager):
         expected_printers[i].ipAddress = "127.0.0.1"
         db_manager.update_printer(printers[i], ipAddress="127.0.0.1")
 
-    default_printer = db_manager.get_printers(name="default")
+    default_printer = db_manager.get_printers(name="Sigmax 4.0")
     assert default_printer.id == printers[0].id
     assert default_printer.idModel == printers[0].idModel
     assert default_printer.idState == printers[0].idState
     assert default_printer.name == printers[0].name
     assert default_printer.serialNumber == printers[0].serialNumber
     assert default_printer.ipAddress == printers[0].ipAddress
-    assert default_printer.apiKey == printers[0].apiKey
     assert default_printer.totalSuccessPrints == printers[0].totalSuccessPrints
     assert default_printer.totalFailedPrints == printers[0].totalFailedPrints
     assert default_printer.totalPrintingTime == printers[0].totalPrintingTime
 
     db_manager.add_finished_print(default_printer, True, timedelta(hours=3, minutes=10, seconds=30))
 
-    default_printer = db_manager.get_printers(name="default")
+    default_printer = db_manager.get_printers(name="Sigmax 4.0")
 
     assert default_printer.totalSuccessPrints == 1
     assert default_printer.totalFailedPrints == 0
@@ -199,7 +197,7 @@ def test_printer_db_manager(db_manager):
 
     db_manager.add_finished_print(default_printer, False, timedelta(hours=3, minutes=10, seconds=29))
 
-    default_printer = db_manager.get_printers(name="default")
+    default_printer = db_manager.get_printers(name="Sigmax 4.0")
 
     assert default_printer.totalSuccessPrints == 1
     assert default_printer.totalFailedPrints == 1
@@ -212,6 +210,6 @@ def test_printer_db_manager(db_manager):
     db_manager.update_job(job, canBePrinted=True)
     db_manager.assign_job_to_printer(default_printer, job)
 
-    default_printer = db_manager.get_printers(name="default")
+    default_printer = db_manager.get_printers(name="Sigmax 4.0")
 
     assert default_printer.current_job.id == job.id
