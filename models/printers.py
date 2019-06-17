@@ -143,7 +143,8 @@ class Printer(db.Model):
 
     model = db.relationship('PrinterModel', back_populates='printers', uselist=False)
     state = db.relationship('PrinterState', back_populates='printers', uselist=False)
-    extruders = db.relationship('PrinterExtruder', back_populates='printer', cascade="all, delete-orphan")
+    extruders = db.relationship('PrinterExtruder', back_populates='printer', cascade="all, delete-orphan",
+                                order_by='PrinterExtruder.index')
     current_job = db.relationship('Job', back_populates='assigned_printer', uselist=False)
 
     def __repr__(self):

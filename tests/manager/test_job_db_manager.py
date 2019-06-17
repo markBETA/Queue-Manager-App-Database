@@ -230,15 +230,26 @@ def test_job_db_manager(db_manager):
 
     assert done_job.state.stateString == "Done"
     assert done_job.succeed is True
-    assert printing_job.assigned_printer is None
+    assert done_job.assigned_printer is None
     assert printer.idCurrentJob is None
 
     not_done_jobs = db_manager.get_not_done_jobs()
 
     assert set(not_done_jobs) == {jobs[1], jobs[2], jobs[3], jobs[4]}
 
-    created_job = db_manager.update_job(done_job, idState=db_manager.job_state_ids["Created"])
-    db_manager.enqueue_created_job(created_job)
+    reprinted_job = db_manager.reprint_done_job(done_job)
+    assert reprinted_job.state.stateString == "Waiting"
+    assert reprinted_job.retries == 0
+    for i in range(len(finished_job.extruders_data)):
+        assert finished_job.extruders_data[i].idUsedExtruderType is None
+        assert finished_job.extruders_data[i].idUsedMaterial is None
+    assert printer.idCurrentJob is None
+    assert reprinted_job.startedAt is None
+    assert reprinted_job.finishedAt is None
+    assert reprinted_job.progress == 0.0
+
+    not_done_jobs = db_manager.get_not_done_jobs()
+    assert set(not_done_jobs) == {jobs[0], jobs[1], jobs[2], jobs[3], jobs[4]}
 
     db_manager.update_printer_extruder(printer_extruders[0], idMaterial=4, idExtruderType=4)
     db_manager.update_can_be_printed_jobs()
@@ -292,9 +303,9 @@ def test_job_db_manager(db_manager):
     enqueued_job = db_manager.enqueue_printing_or_finished_job(printing_job, max_priority=False)
     assert enqueued_job.state.stateString == "Waiting"
     assert enqueued_job.retries == 1
-    for i in range(len(finished_job.extruders_data)):
-        assert finished_job.extruders_data[i].idUsedExtruderType is None
-        assert finished_job.extruders_data[i].idUsedMaterial is None
+    for i in range(len(enqueued_job.extruders_data)):
+        assert enqueued_job.extruders_data[i].idUsedExtruderType is None
+        assert enqueued_job.extruders_data[i].idUsedMaterial is None
     assert printer.idCurrentJob is None
 
     expected_queue_order = [jobs[1], jobs[3], jobs[4], jobs[2], jobs[0]]

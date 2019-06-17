@@ -128,9 +128,12 @@ class Job(db.Model):
     file = db.relationship('File', back_populates='jobs', uselist=False)
     user = db.relationship('User', back_populates='jobs', uselist=False)
     assigned_printer = db.relationship('Printer', back_populates='current_job', uselist=False)
-    allowed_materials = db.relationship('JobAllowedMaterial', back_populates='job', cascade="all, delete-orphan")
-    allowed_extruder_types = db.relationship('JobAllowedExtruder', back_populates='job', cascade="all, delete-orphan")
-    extruders_data = db.relationship('JobExtruder', back_populates='job', cascade="all, delete-orphan")
+    allowed_materials = db.relationship('JobAllowedMaterial', back_populates='job', cascade="all, delete-orphan",
+                                        order_by='JobAllowedMaterial.extruderIndex')
+    allowed_extruder_types = db.relationship('JobAllowedExtruder', back_populates='job', cascade="all, delete-orphan",
+                                             order_by='JobAllowedExtruder.extruderIndex')
+    extruders_data = db.relationship('JobExtruder', back_populates='job', cascade="all, delete-orphan",
+                                     order_by='JobExtruder.extruderIndex')
 
     def __repr__(self):
         return '[{}]<id: {} / name: {} / priority_i: {}>'.format(self.__tablename__, self.id, self.name,
