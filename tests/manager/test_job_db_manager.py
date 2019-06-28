@@ -5,7 +5,7 @@ This module implements the file data related database models testing.
 __author__ = "Marc Bermejo"
 __credits__ = ["Marc Bermejo"]
 __license__ = "GPL-3.0"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
@@ -338,3 +338,9 @@ def test_job_db_manager(db_manager):
     none_job = db_manager.get_jobs(id=jobs[0].id)
 
     assert none_job is None
+
+    jobs_in_queue = db_manager.count_jobs_in_queue(only_can_be_printed=False)
+    assert jobs_in_queue == 4
+
+    jobs_in_queue = db_manager.count_jobs_in_queue(only_can_be_printed=True)
+    assert jobs_in_queue == 2

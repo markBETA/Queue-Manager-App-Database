@@ -5,7 +5,7 @@ This module contains the database manager class for the file operations.
 __author__ = "Marc Bermejo"
 __credits__ = ["Marc Bermejo"]
 __license__ = "GPL-3.0"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
@@ -534,6 +534,9 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         # Check also if the job can be printed before assign it
         if not job.canBePrinted:
             raise InvalidParameter('Can\'t assign a job to a printer that can\'t be printed')
+        # Check that the printer don't have any assigned job already
+        if printer.idCurrentJob is not None:
+            raise InvalidParameter('Can\'t assign a job to a printer that has already an assigned job')
 
         # Update the printer current job ID
         printer.idCurrentJob = job.id
@@ -568,3 +571,11 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         self.execute_update(JobExtruder.query.filter_by(idJob=job.id), values_to_update)
 
         return job
+
+    def count_jobs_in_queue(self, only_can_be_printed=True):
+        query = Job.query.filter_by(idState=self.job_state_ids["Waiting"])
+
+        if only_can_be_printed:
+            query = query.filter_by(canBePrinted=True)
+
+        return self.execute_query(query, count=True)

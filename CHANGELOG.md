@@ -1,14 +1,10 @@
 Version 0.0.1
 =============
-    * Added the socket.io functionality for users (front-end) and printers.
-    * Added the database manager and the defined models,
-    * Added the blacklist manager to control the active tokens used for authenticate.
-    * Added the api resources for both the front-end and the printers.
-    * Added a full unit test suite of the server.
+    * Added the first database structure.
+    * Added the database manager class with the allowed database interactions.
 
 Version 0.0.2
 =============
-    * Now the GCODE upload and download is managed together with Nginx at production environment.
-    * Changed the route **POST /jobs** to **POST /jobs/create**.
-    * Added the **PUT /jobs/<int:job_id>/reprint** for reprinting done jobs.
-    * Swagger documentation revised and corrected.
+    * Added the 'count' functionallity at the database manager base class.
+    * Added the 'count_jobs_in_queue' method to the database manager class.
+    * Adapt the test configuration file to the new application factory.
