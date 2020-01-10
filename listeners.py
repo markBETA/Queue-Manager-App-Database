@@ -1,5 +1,5 @@
 """
-This module implements the database initializers and the tables population data.
+This module implements the database event listeners.
 """
 
 __author__ = "Marc Bermejo"
