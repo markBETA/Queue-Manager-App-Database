@@ -5,7 +5,7 @@ This module implements the file data related database models.
 __author__ = "Marc Bermejo"
 __credits__ = ["Marc Bermejo"]
 __license__ = "GPL-3.0"
-__version__ = "0.0.2"
+__version__ = "0.1.0"
 __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
@@ -20,7 +20,7 @@ from ..definitions import db_conn as db, bind_key
 
 class File(db.Model):
     """
-    Definition of the table JOBS_TABLE that contains all the uploaded GCODE files
+    Definition of the table FILES_TABLE that contains all the uploaded GCODE files
     """
     __bind_key__ = bind_key
     __tablename__ = FILES_TABLE

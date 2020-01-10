@@ -1,18 +1,19 @@
 """
-This module contains the database manager class for the file operations.
+This module contains the database manager class for the job operations.
 """
 
 __author__ = "Marc Bermejo"
 __credits__ = ["Marc Bermejo"]
 __license__ = "GPL-3.0"
-__version__ = "0.0.2"
+__version__ = "0.1.0"
 __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
 
 from datetime import datetime, timedelta
-
 from sqlalchemy.orm import scoped_session
+
+from flask import Flask
 
 from .base_class import DBManagerBase
 from .exceptions import (
@@ -29,6 +30,13 @@ class DBManagerJobStates(DBManagerBase):
     This class implements the database manager class for the job states operations
     """
     def get_job_states(self, **kwargs):
+        """
+        Makes a query to the database to retrieve the job states following
+        the filter parameters specified by the kwargs.
+
+        :param kwargs: The filters to apply to the query
+        :return: The retrieved job states
+        """
         # Create the query object
         query = JobState.query.order_by(JobState.id.asc())
 
@@ -48,9 +56,16 @@ class DBManagerJobStates(DBManagerBase):
 
 class DBManagerJobAllowedMaterials(DBManagerBase):
     """
-    This class implements the database manager class for the job states operations
+    This class implements the database manager class for the job allowed materials operations
     """
-    def insert_job_allowed_materials(self, job: Job, allowed_materials: list, add_to_database: bool = True):
+    def insert_job_allowed_materials(self, job: Job, allowed_materials: list):
+        """
+        Inserts new entries to the `JobAllowedMaterial` table.
+
+        :param job: The target job object
+        :param allowed_materials: A list containing the allowed materials to add
+        :return: The set of the created `JobAllowedMaterial` objects
+        """
         # Initialize the JobAllowedMaterial objects list
         job_allowed_materials = []
 
@@ -66,9 +81,8 @@ class DBManagerJobAllowedMaterials(DBManagerBase):
                 idMaterial=material.id,
                 extruderIndex=extruder_index
             )
-            # Add the object to the database (if specified)
-            if add_to_database:
-                self.add_row(job_allowed_material)
+            # Add the object to the database
+            self.add_row(job_allowed_material)
             # Add the object to the allowed materials list
             job_allowed_materials.append(job_allowed_material)
 
@@ -79,6 +93,14 @@ class DBManagerJobAllowedMaterials(DBManagerBase):
         return job_allowed_materials
 
     def get_job_allowed_materials(self, job: Job, extruder_index: int = None):
+        """
+        Makes a query to the database to retrieve the job allowed materials of the specified
+        `Job` object. Also admits to filter them by the extruder index.
+
+        :param job: The job entry of the allowed materials to retrieve
+        :param extruder_index: An optional parameter to filter them by the extruder index
+        :return: The retrieved job allowed materials
+        """
         # Create the query object
         query = JobAllowedMaterial.query.filter_by(idJob=job.id).order_by(JobAllowedMaterial.id.asc())
 
@@ -95,6 +117,14 @@ class DBManagerJobAllowedMaterials(DBManagerBase):
         return printer_materials
 
     def get_jobs_by_material(self, material: PrinterMaterial, extruder_index: int = None):
+        """
+        Makes a query to the database to retrieve the jobs that can be printed with the
+        specified material. Also admits to filter them by the extruder index.
+
+        :param material: The allowed material entry of the jobs to retrieve
+        :param extruder_index: An optional parameter to filter them by the extruder index
+        :return: The retrieved jobs
+        """
         # Create the query object
         query = JobAllowedMaterial.query.filter_by(idMaterial=material.id).order_by(JobAllowedMaterial.id.asc())
 
@@ -113,9 +143,16 @@ class DBManagerJobAllowedMaterials(DBManagerBase):
 
 class DBManagerJobAllowedExtruderTypes(DBManagerBase):
     """
-    This class implements the database manager class for the job states operations
+    This class implements the database manager class for the job allowed extruder types operations
     """
-    def insert_job_allowed_extruder_types(self, job: Job, allowed_extruder_types: list, add_to_database: bool = True):
+    def insert_job_allowed_extruder_types(self, job: Job, allowed_extruder_types: list):
+        """
+        Inserts a new entries to the `JobAllowedExtruderType` table.
+
+        :param job: The target job object
+        :param allowed_extruder_types: A list containing the allowed extruder types to add
+        :return: The set of the created `JobAllowedExtruderType` objects
+        """
         # Initialize the JobAllowedExtruderTypes objects list
         job_allowed_extruders = []
 
@@ -131,9 +168,8 @@ class DBManagerJobAllowedExtruderTypes(DBManagerBase):
                 idExtruderType=extruder_type.id,
                 extruderIndex=extruder_index
             )
-            # Add the object to the database (if specified)
-            if add_to_database:
-                self.add_row(job_allowed_extruder)
+            # Add the object to the database
+            self.add_row(job_allowed_extruder)
             # Add the object to the allowed extruder types list
             job_allowed_extruders.append(job_allowed_extruder)
 
@@ -144,6 +180,14 @@ class DBManagerJobAllowedExtruderTypes(DBManagerBase):
         return job_allowed_extruders
 
     def get_job_allowed_extruder_types(self, job: Job, extruder_index: int = None):
+        """
+        Makes a query to the database to retrieve the job allowed extruder types of the specified
+        `Job` object. Also admits to filter them by the extruder index.
+
+        :param job: The job entry of the allowed extruder types to retrieve
+        :param extruder_index: An optional parameter to filter them by the extruder index
+        :return: The retrieved job allowed extruder types
+        """
         # Create the query object
         query = JobAllowedExtruder.query.filter_by(idJob=job.id).order_by(JobAllowedExtruder.id.asc())
 
@@ -160,6 +204,14 @@ class DBManagerJobAllowedExtruderTypes(DBManagerBase):
         return printer_extruder_types
 
     def get_jobs_by_extruder_type(self, extruder_type: PrinterExtruderType, extruder_index: int = None):
+        """
+        Makes a query to the database to retrieve the jobs that can be printed with the
+        specified extruder type. Also admits to filter them by the extruder index.
+
+        :param extruder_type: The allowed extruder type entry of the jobs to retrieve
+        :param extruder_index: An optional parameter to filter them by the extruder index
+        :return: The retrieved jobs
+        """
         # Create the query object
         query = JobAllowedExtruder.query.filter_by(idExtruderType=extruder_type.id).\
             order_by(JobAllowedExtruder.id.asc())
@@ -179,10 +231,16 @@ class DBManagerJobAllowedExtruderTypes(DBManagerBase):
 
 class DBManagerJobExtruders(DBManagerBase):
     """
-        This class implements the database manager class for the job states operations
+    This class implements the database manager class for the job extruders operations
+    """
+    def insert_job_extruders(self, job: Job, used_extruder_indexes: list):
         """
+        Inserts a new entries to the `JobExtruder` table.
 
-    def insert_job_extruders(self, job: Job, used_extruder_indexes: list, add_to_database: bool = True):
+        :param job: The target job object
+        :param used_extruder_indexes: A list containing the used extruder indexes
+        :return: The set of the created `JobExtruder` objects
+        """
         # Initialize the JobExtruder objects list
         job_extruders = []
 
@@ -193,9 +251,8 @@ class DBManagerJobExtruders(DBManagerBase):
                 idJob=job.id,
                 extruderIndex=extruder_index
             )
-            # Add the object to the database (if specified)
-            if add_to_database:
-                self.add_row(job_extruder)
+            # Add the object to the database
+            self.add_row(job_extruder)
             # Add the object to the allowed extruder types list
             job_extruders.append(job_extruder)
 
@@ -206,6 +263,14 @@ class DBManagerJobExtruders(DBManagerBase):
         return job_extruders
 
     def update_job_extruder(self, job_extruder: JobExtruder, **kwargs):
+        """
+        Update the specified job extruder entry values according to the fields specified
+        by the kwargs argument.
+
+        :param job_extruder: The SQLAlchemy database model object to update
+        :param kwargs: The fields to update
+        :return: The updated `JobExtruder` object
+        """
         # Modify the specified job fields
         for key, value in kwargs.items():
             if hasattr(JobExtruder, key):
@@ -220,6 +285,14 @@ class DBManagerJobExtruders(DBManagerBase):
         return job_extruder
 
     def get_job_extruders(self, job: Job, extruder_index: int = None):
+        """
+        Makes a query to the database to retrieve the job extruders of the specified
+        `Job` object. Also admits to filter them by the extruder index.
+
+        :param job: The job entry of the job extruders to retrieve
+        :param extruder_index: An optional parameter to filter them by the extruder index
+        :return: The retrieved job extruders
+        """
         # Create the query object
         query = JobExtruder.query.filter_by(idJob=job.id).order_by(JobExtruder.id.asc())
 
@@ -233,17 +306,30 @@ class DBManagerJobExtruders(DBManagerBase):
 class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
                     DBManagerJobAllowedExtruderTypes, DBManagerJobExtruders):
     """
-    This class implements the database manager class for the file operations
+    This class implements the database manager class for the job operations
     """
-    def __init__(self, autocommit: bool = True, override_session: scoped_session = None):
-        super().__init__(autocommit, override_session)
+    def __init__(self, app: Flask = None, autocommit: bool = True, override_session: scoped_session = None):
+        """
+        Initialize the `DBManagerJobs` object.
+
+        :param app: Flask application object
+        :param autocommit: This flag determines if the changes will be committed automatically
+        :param override_session: The custom SQLAlchemy session object that will be used
+        """
+        super().__init__(app, autocommit, override_session)
         self.job_state_ids = dict()
 
     def init_static_values(self):
+        """
+        Save in memory the database static values, in this case the job states and it's IDs.
+        """
         for state in self.get_job_states():
             self.job_state_ids[state.stateString] = state.id
 
     def init_jobs_can_be_printed(self):
+        """
+        Initialize the can be printed flag for all jobs.
+        """
         # Update all the jobs 'canBePrinted' column
         for job in self.get_jobs(idState=self.job_state_ids["Waiting"]):
             self.update_job(job, canBePrinted=False)
@@ -253,6 +339,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             self.commit_changes()
 
     def check_can_be_printed_job(self, job: Job, return_usable_printers: bool = False):
+        """
+        Check if a job can be printed by the availabe printer(s).
+
+        :param job: The job to check
+        :param return_usable_printers: Flag to specify the return format
+        :return: If the job can be printed or not, or the printers that can print it
+        """
         # Get all the working printers
         query = Printer.query.join(PrinterState).filter(PrinterState.isOperationalState.is_(True))
         usable_printers = self.execute_query(query)
@@ -281,6 +374,14 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             return bool(usable_printers)
 
     def insert_job(self, name: str, file: File, user: User):
+        """
+        Inserts a new entry to the `Job` table.
+
+        :param name: The name of the job to create
+        :param file: The job's associated file
+        :param user: The job owner
+        :return: The created `Job` object
+        """
         # Check parameter values
         if name == "":
             raise InvalidParameter("The 'name' parameter can't be an empty string")
@@ -303,6 +404,14 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def get_jobs(self, order_by_priority: bool = False, **kwargs):
+        """
+        Makes a query to the database to retrieve the job(s) following
+        the filter parameters specified by the kwargs.
+
+        :param order_by_priority: Flag to specify if we want to order the jobs by its priority
+        :param kwargs: The filters to apply to the query
+        :return: The retrieved job(s)
+        """
         # Create the query object
         if order_by_priority:
             query = Job.query.order_by(Job.priority_i.asc())
@@ -323,6 +432,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return self.execute_query(query)
 
     def get_not_done_jobs(self, order_by_priority: bool = False):
+        """
+        Makes a query to the database to retrieve the job(s) that are in a state
+        different than 'Done' following the filter parameters specified by the kwargs.
+
+        :param order_by_priority: Flag to specify if we want to order the jobs by its priority
+        :return: The retrieved job(s)
+        """
         # Create the query object
         if order_by_priority:
             query = Job.query.order_by(Job.priority_i.asc())
@@ -336,6 +452,14 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return self.execute_query(query)
 
     def update_job(self, job: Job, **kwargs):
+        """
+        Update the specified job entry values according to the fields specified
+        by the kwargs argument.
+
+        :param job: The SQLAlchemy database model object to update
+        :param kwargs: The fields to update
+        :return: The updated `Job` object
+        """
         # Modify the specified job fields
         for key, value in kwargs.items():
             if hasattr(Job, key):
@@ -350,6 +474,9 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def update_can_be_printed_jobs(self):
+        """
+        Update the can be printed flag of all the jobs that are in 'Waiting' state.
+        """
         # Get all the jobs in waiting state
         jobs = self.execute_query(Job.query.filter_by(idState=self.job_state_ids["Waiting"]))
 
@@ -363,6 +490,12 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             self.commit_changes()
 
     def enqueue_created_job(self, job: Job):
+        """
+        Add to the queue a job that is in the 'Created' state.
+
+        :param job: The job to enqueue
+        :return: The updated `Job` object
+        """
         # Check that the job is in the initial state
         if job.idState != self.job_state_ids["Created"]:
             raise InvalidParameter("The job to enqueue needs to be in the initial state ('Created')")
@@ -384,6 +517,11 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def get_first_job_in_queue(self):
+        """
+        TODO: Docs
+
+        :return:
+        """
         # Get head of the jobs queue
         query = Job.query.filter_by(idState=self.job_state_ids["Waiting"]).filter_by(canBePrinted=True).\
             order_by(Job.priority_i.asc())
@@ -391,6 +529,12 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return self.execute_query(query, use_list=False)
 
     def set_printing_job(self, job: Job):
+        """
+        TODO: Docs
+
+        :param job:
+        :return:
+        """
         # First check if the job is in waiting state
         if not job.canBePrinted or job.idState != self.job_state_ids["Waiting"]:
             raise InvalidParameter("This job can't be printed with any printer")
@@ -405,6 +549,12 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def set_finished_job(self, job: Job):
+        """
+        TODO: Docs
+
+        :param job:
+        :return:
+        """
         # First check if the job was in 'Printing' state and if the assigned printer is set
         if job.idState != self.job_state_ids["Printing"]:
             raise InvalidParameter("The job needs to be in 'Printing' state to change to 'Finished' state")
@@ -428,6 +578,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def set_done_job(self, job: Job, succeed: bool):
+        """
+        TODO: Docs
+
+        :param job:
+        :param succeed:
+        :return:
+        """
         # First check if the job was in 'Finished' state
         if job.idState != self.job_state_ids["Finished"]:
             raise InvalidParameter("The job needs to be in 'Finished' state to change to 'Done' state")
@@ -438,6 +595,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def reorder_job_in_queue(self, job: Job, after: Job):
+        """
+        TODO: Docs
+
+        :param job:
+        :param after:
+        :return:
+        """
         # Check that the job is in waiting state
         if job.idState != self.job_state_ids["Waiting"]:
             raise InvalidParameter("The job to reorder needs to be in the 'Waiting' state")
@@ -490,6 +654,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             self.commit_changes()
 
     def enqueue_printing_or_finished_job(self, job: Job, max_priority: bool):
+        """
+        TODO: Docs
+
+        :param job:
+        :param max_priority:
+        :return:
+        """
         # Check that the job is in the printing or finished state
         if job.idState not in (self.job_state_ids["Printing"], self.job_state_ids["Finished"]):
             raise InvalidParameter("The job to enqueue needs to be in the state 'Printing' or 'Finished'")
@@ -520,6 +691,11 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def delete_job(self, job: Job):
+        """
+        TODO: Docs
+
+        :param job:
+        """
         # Delete the job from the database
         self.del_row(job)
 
@@ -528,6 +704,13 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
             self.commit_changes()
 
     def assign_job_to_printer(self, printer: Printer, job: Job):
+        """
+        TODO: Docs
+
+        :param printer:
+        :param job:
+        :return:
+        """
         # Check that the job is in the 'Waiting'
         if job.idState != self.job_state_ids["Waiting"]:
             raise InvalidParameter("The job to assign needs to be in the state 'Waiting''")
@@ -548,6 +731,12 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return printer
 
     def reprint_done_job(self, job: Job):
+        """
+        TODO: Docs
+
+        :param job:
+        :return:
+        """
         # Check that the job is in the printing or finished state
         if job.idState != self.job_state_ids["Done"]:
             raise InvalidParameter("The job to enqueue needs to be in the state 'Done'")
@@ -573,6 +762,12 @@ class DBManagerJobs(DBManagerJobStates, DBManagerJobAllowedMaterials,
         return job
 
     def count_jobs_in_queue(self, only_can_be_printed=True):
+        """
+        TODO: Docs
+
+        :param only_can_be_printed:
+        :return:
+        """
         query = Job.query.filter_by(idState=self.job_state_ids["Waiting"])
 
         if only_can_be_printed:

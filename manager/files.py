@@ -5,7 +5,7 @@ This module contains the database manager class for the file operations.
 __author__ = "Marc Bermejo"
 __credits__ = ["Marc Bermejo"]
 __license__ = "GPL-3.0"
-__version__ = "0.0.2"
+__version__ = "0.1.0"
 __maintainer__ = "Marc Bermejo"
 __email__ = "mbermejo@bcn3dtechnologies.com"
 __status__ = "Development"
@@ -24,6 +24,15 @@ class DBManagerFiles(DBManagerBase):
     This class implements the database manager class for the file operations
     """
     def insert_file(self, user: User, name: str, full_path: str = None, **kwargs):
+        """
+        Inserts a new entry to the `File` table
+
+        :param user: The owner of the file
+        :param name: The name of the file
+        :param full_path: The path where the file was stored
+        :param kwargs: Additional file data parameters
+        :return: The created file entry
+        """
         # Check parameter values
         if name == "":
             raise InvalidParameter("The 'name' parameter can't be an empty string")
@@ -54,6 +63,13 @@ class DBManagerFiles(DBManagerBase):
         return file
 
     def get_files(self, **kwargs):
+        """
+        Makes a query to the database to retrieve the file(s) following
+        the filter parameters specified by the kwargs.
+
+        :param kwargs: The filters to apply to the query
+        :return: The retrieved file(s)
+        """
         # Create the query object
         query = File.query.order_by(File.id.asc())
 
@@ -71,6 +87,14 @@ class DBManagerFiles(DBManagerBase):
         return self.execute_query(query)
 
     def update_file(self, file: File, **kwargs):
+        """
+        Update the specified file entry values according to the fields specified
+        by the kwargs argument.
+
+        :param file: The SQLAlchemy database model object to update
+        :param kwargs: The fields to update
+        :return: The updated `File` object
+        """
         # Modify the specified file fields
         for key, value in kwargs.items():
             if hasattr(File, key):
@@ -85,6 +109,11 @@ class DBManagerFiles(DBManagerBase):
         return file
 
     def delete_file(self, file: File):
+        """
+        Deletes a file entry from the database
+
+        :param file: The SQLAlchemy database model object to delete
+        """
         # Delete the row at the database
         self.del_row(file)
 
@@ -93,6 +122,12 @@ class DBManagerFiles(DBManagerBase):
             self.commit_changes()
 
     def delete_files(self, **kwargs):
+        """
+        Deletes a set of file entries from the database according to the filters
+        specified by the kwargs argument.
+
+        :param kwargs: The filters to apply to the query
+        """
         # Initialize the deleted files counter
         deleted_files_count = 0
 
